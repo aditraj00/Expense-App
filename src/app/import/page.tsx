@@ -6,14 +6,22 @@ export const dynamic = "force-dynamic";
 
 export default async function ImportPage() {
   const groups = await db.group.findMany({ orderBy: { createdAt: "desc" } });
+
   const latestRun = await db.importRun.findFirst({
     orderBy: { createdAt: "desc" },
     include: { anomalies: true }
   });
 
-  const csvText = readFileSync("data/expenses_export.csv", "utf8");
+  let csvText = "CSV file not found.";
+
+  try {
+    csvText = readFileSync("data/expenses_export.csv", "utf8");
+  } catch (error) {
+    console.log("CSV file not found, skipping preview.");
+  }
 
   return (
+    
     <main>
       <section className="panel panel-inner" style={{ display: "grid", gap: 20 }}>
         <div>
